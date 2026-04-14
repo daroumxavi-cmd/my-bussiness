@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmpireForge • Become a Billionaire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap');
+        
+        :root {
+            --primary: 234 179 8;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .money {
+            font-feature-settings: "tnum";
+        }
+
+        .tab-active {
+            border-bottom: 4px solid rgb(234 179 8);
+            color: white;
+        }
+
+        .modal {
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .income-ticker {
+            animation: ticker 15s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen">
+    <div class="max-w-7xl mx-auto">
+        <!-- HEADER -->
+        <header class="bg-black border-b border-zinc-800 sticky top-0 z-50">
+            <div class="px-8 py-5 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-yellow-400 rounded-2xl flex items-center justify-center text-black font-bold text-3xl title-font">E</div>
+                    <div>
+                        <h1 class="text-3xl font-bold title-font tracking-tighter">EmpireForge</h1>
+                        <p class="text-xs text-zinc-500 -mt-1">BUILD • TRADE • CONQUER</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-8">
+                    <!-- MONEY DISPLAY -->
+                    <div onclick="showLoanModal()" class="bg-zinc-900 hover:bg-zinc-800 transition-colors rounded-3xl px-8 py-4 cursor-pointer border border-yellow-400/30 flex items-center gap-3">
+                        <i class="fa-solid fa-dollar-sign text-3xl text-yellow-400"></i>
+                        <div>
+                            <div id="money-display" class="text-4xl font-bold money text-yellow-400">$12,450</div>
+                            <div class="text-xs text-zinc-400 flex items-center gap-1">
+                                <span id="net-worth">Net Worth: $18,920</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- INCOME RATE -->
+                    <div class="text-right">
+                        <div class="text-xs text-emerald-400 flex items-center gap-1 justify-end">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            <span id="income-rate">+$1,284 / hr</span>
+                        </div>
+                        <div id="offline-income" class="text-[10px] text-zinc-500"></div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button onclick="resetGame()" 
+                            class="px-5 py-2 text-xs font-medium bg-zinc-900 hover:bg-red-950 text-red-400 border border-red-900 rounded-2xl flex items-center gap-2">
+                        <i class="fa-solid fa-rotate"></i>
+                        RESET
+                    </button>
+                    <div class="w-9 h-9 bg-zinc-800 rounded-2xl flex items-center justify-center text-xl">👑</div>
+                </div>
+            </div>
+            
+            <!-- TABS -->
+            <div class="flex border-t border-zinc-800 px-8">
+                <button onclick="switchTab(0)" id="tab-0"
+                        class="tab-active px-8 py-4 font-semibold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-house"></i> DASHBOARD
+                </button>
+                <button onclick="switchTab(1)" id="tab-1"
+                        class="px-8 py-4 font-semibold text-sm flex items-center gap-2 hover:text-yellow-400 transition-colors">
+                    <i class="fa-solid fa-building"></i> BUSINESSES
+                </button>
+                <button onclick="switchTab(2)" id="tab-2"
+                        class="px-8 py-4 font-semibold text-sm flex items-center gap-2 hover:text-yellow-400 transition-colors">
+                    <i class="fa-solid fa-box"></i> ASSETS
+                </button>
+                <button onclick="switchTab(3)" id="tab-3"
+                        class="px-8 py-4 font-semibold text-sm flex items-center gap-2 hover:text-yellow-400 transition-colors">
+                    <i class="fa-solid fa-store"></i> MARKETPLACE
+                </button>
+                <button onclick="switchTab(4)" id="tab-4"
+                        class="px-8 py-4 font-semibold text-sm flex items-center gap-2 hover:text-yellow-400 transition-colors">
+                    <i class="fa-solid fa-handshake"></i> PARTNERSHIPS
+                </button>
+                <button onclick="switchTab(5)" id="tab-5"
+                        class="px-8 py-4 font-semibold text-sm flex items-center gap-2 hover:text-yellow-400 transition-colors">
+                    <i class="fa-solid fa-trophy"></i> LEADERBOARD
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <div class="p-8">
+
+            <!-- DASHBOARD -->
+            <div id="content-0" class="tab-content">
+                <div class="grid grid-cols-12 gap-6">
+                    <!-- WELCOME -->
+                    <div class="col-span-12 lg:col-span-8">
+                        <div class="bg-gradient-to-br from-yellow-400/10 to-transparent border border-yellow-400/20 rounded-3xl p-8">
+                            <h2 class="text-5xl font-bold title-font tracking-tighter mb-2">Welcome back, Empire Builder</h2>
+                            <p class="text-xl text-zinc-400">You've grown your empire by <span id="today-growth" class="text-emerald-400 font-semibold">$3,241</span> today.</p>
+                            
+                            <div class="mt-10 grid grid-cols-3 gap-6">
+                                <div class="bg-zinc-900 rounded-3xl p-6 card">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="text-sm text-zinc-400">Total Businesses</div>
+                                            <div id="dash-businesses" class="text-6xl font-bold title-font">4</div>
+                                        </div>
+                                        <i class="fa-solid fa-building text-5xl text-yellow-400 opacity-30"></i>
+                                    </div>
+                                </div>
+                                <div class="bg-zinc-900 rounded-3xl p-6 card">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="text-sm text-zinc-400">Passive Assets</div>
+                                            <div id="dash-assets" class="text-6xl font-bold title-font">7</div>
+                                        </div>
+                                        <i class="fa-solid fa-box text-5xl text-yellow-400 opacity-30"></i>
+                                    </div>
+                                </div>
+                                <div class="bg-zinc-900 rounded-3xl p-6 card">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="text-sm text-zinc-400">Total Net Worth</div>
+                                            <div id="dash-networth" class="text-6xl font-bold title-font">$248K</div>
+                                        </div>
+                                        <i class="fa-solid fa-coins text-5xl text-yellow-400 opacity-30"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QUICK ACTIONS -->
+                    <div class="col-span-12 lg:col-span-4 space-y-6">
+                        <button onclick="openNewBusinessModal()" 
+                                class="w-full h-28 bg-gradient-to-r from-yellow-400 to-amber-500 text-black font-bold text-2xl rounded-3xl flex items-center justify-center gap-4 hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-plus"></i>
+                            OPEN NEW BUSINESS
+                        </button>
+                        
+                        <button onclick="openMarketplace()" 
+                                class="w-full h-28 bg-zinc-900 hover:bg-zinc-800 border border-yellow-400/50 rounded-3xl flex items-center justify-center gap-4 text-xl font-semibold transition-all">
+                            <i class="fa-solid fa-store"></i>
+                            BROWSE MARKETPLACE
+                        </button>
+                    </div>
+
+                    <!-- RECENT ACTIVITY -->
+                    <div class="col-span-12">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fa-solid fa-clock"></i> LIVE ACTIVITY</h3>
+                        <div id="activity-feed" class="space-y-3 max-h-64 overflow-auto text-sm">
+                            <!-- populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BUSINESSES TAB -->
+            <div id="content-1" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold title-font">Your Businesses</h2>
+                    <button onclick="openNewBusinessModal()" 
+                            class="bg-yellow-400 text-black px-8 py-3 rounded-2xl font-semibold flex items-center gap-3 hover:bg-amber-300">
+                        <i class="fa-solid fa-plus"></i> OPEN NEW
+                    </button>
+                </div>
+                
+                <div id="businesses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+
+            <!-- ASSETS TAB -->
+            <div id="content-2" class="tab-content hidden">
+                <h2 class="text-3xl font-bold title-font mb-6">Your Assets &amp; Liabilities</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Assets -->
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold">Assets</h3>
+                            <button onclick="buyAssetModal()" 
+                                    class="text-xs bg-emerald-500 px-5 py-2 rounded-2xl">BUY NEW ASSET</button>
+                        </div>
+                        <div id="assets-list" class="space-y-4">
+                            <!-- populated by JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Liabilities -->
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-red-400">Liabilities (Loans)</h3>
+                        </div>
+                        <div id="liabilities-list" class="space-y-4">
+                            <!-- populated by JS -->
+                        </div>
+                        <button onclick="takeLoanModal()" 
+                                class="mt-6 w-full py-6 border border-dashed border-red-400/50 hover:border-red-400 rounded-3xl text-red-400 flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                            TAKE A BANK LOAN
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MARKETPLACE TAB -->
+            <div id="content-3" class="tab-content hidden">
+                <div class="flex justify-between mb-6">
+                    <h2 class="text-3xl font-bold title-font">Global Marketplace</h2>
+                    <div class="flex gap-3">
+                        <button onclick="listItemModal()" 
+                                class="bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-2xl text-sm font-medium">LIST YOUR ITEM</button>
+                        <button onclick="refreshMarketplace()" 
+                                class="bg-yellow-400 text-black px-6 py-3 rounded-2xl text-sm font-medium flex items-center gap-2">
+                            <i class="fa-solid fa-arrows-rotate"></i> REFRESH
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="marketplace-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+
+            <!-- PARTNERSHIPS TAB -->
+            <div id="content-4" class="tab-content hidden">
+                <h2 class="text-3xl font-bold title-font mb-6">Active Partnerships</h2>
+                <div id="partnerships-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- populated by JS -->
+                </div>
+                <button onclick="createPartnershipModal()" 
+                        class="mt-8 w-full py-8 bg-gradient-to-r from-purple-500 to-violet-500 rounded-3xl text-xl font-bold flex items-center justify-center gap-4">
+                    <i class="fa-solid fa-users"></i>
+                    START NEW PARTNERSHIP
+                </button>
+            </div>
+
+            <!-- LEADERBOARD -->
+            <div id="content-5" class="tab-content hidden">
+                <h2 class="text-3xl font-bold title-font mb-6">Top Empire Builders</h2>
+                <div id="leaderboard-list" class="space-y-4">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <!-- New Business Modal -->
+    <div id="new-business-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
+        <div class="modal bg-zinc-900 rounded-3xl max-w-lg w-full mx-4 overflow-hidden">
+            <div class="px-8 py-6 border-b border-zinc-700 flex items-center justify-between">
+                <h3 class="font-bold text-2xl">Open New Business</h3>
+                <button onclick="closeModal('new-business-modal')" class="text-3xl leading-none">×</button>
+            </div>
+            <div id="business-types" class="p-8 grid grid-cols-2 gap-4">
+                <!-- JS populated -->
+            </div>
+            <div class="p-8 border-t border-zinc-700 flex justify-end gap-4">
+                <button onclick="closeModal('new-business-modal')" 
+                        class="px-8 py-4 font-medium">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buy Asset Modal -->
+    <div id="buy-asset-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
+        <div class="modal bg-zinc-900 rounded-3xl max-w-lg w-full mx-4">
+            <div class="p-8">
+                <h3 class="font-bold text-2xl mb-6">Available Assets to Buy</h3>
+                <div id="asset-types-list" class="space-y-4">
+                    <!-- JS populated -->
+                </div>
+            </div>
+            <div class="p-8 border-t border-zinc-700 flex justify-end">
+                <button onclick="closeModal('buy-asset-modal')" class="px-10 py-4">CLOSE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loan Modal -->
+    <div id="loan-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
+        <div class="modal bg-zinc-900 rounded-3xl max-w-md w-full mx-4 p-8">
+            <h3 class="text-2xl font-bold mb-6 text-red-400">Take a Loan</h3>
+            <div class="space-y-8">
+                <div>
+                    <label class="text-xs text-zinc-400 block mb-2">LOAN AMOUNT</label>
+                    <input id="loan-amount" type="range" min="5000" max="100000" step="5000" value="25000" 
+                           class="w-full accent-red-400" oninput="updateLoanPreview()">
+                    <div class="flex justify-between text-xl font-bold mt-2">
+                        <span>$5,000</span>
+                        <span id="loan-preview">$25,000</span>
+                        <span>$100,000</span>
+                    </div>
+                </div>
+                <div class="bg-zinc-800 rounded-2xl p-6 text-sm">
+                    <div class="flex justify-between mb-2">
+                        <span>Interest rate</span>
+                        <span class="text-red-400">8% per hour</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>You receive now</span>
+                        <span id="loan-receive" class="font-bold">$25,000</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10 flex gap-4">
+                <button onclick="closeModal('loan-modal')" class="flex-1 py-5 bg-zinc-800 rounded-2xl">CANCEL</button>
+                <button onclick="takeLoan()" 
+                        class="flex-1 py-5 bg-red-500 hover:bg-red-600 rounded-2xl font-bold">TAKE LOAN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Marketplace Listing Modal -->
+    <div id="list-item-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
+        <div class="modal bg-zinc-900 rounded-3xl max-w-lg w-full mx-4 p-8">
+            <h3 class="font-bold text-2xl mb-6">List Item for Sale</h3>
+            <select id="list-item-select" class="w-full bg-zinc-800 rounded-2xl px-6 py-5 text-lg">
+                <!-- populated by JS -->
+            </select>
+            <div class="mt-6">
+                <label class="block text-xs mb-2">ASKING PRICE ($)</label>
+                <input id="listing-price" type="number" value="15000" 
+                       class="w-full bg-zinc-800 rounded-2xl px-6 py-5 text-3xl font-bold">
+            </div>
+            <div class="mt-8 flex gap-4">
+                <button onclick="closeModal('list-item-modal')" class="flex-1 py-5 bg-zinc-800 rounded-2xl">CANCEL</button>
+                <button onclick="listItemForSale()" class="flex-1 py-5 bg-yellow-400 text-black rounded-2xl font-bold">LIST ON MARKET</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buy Confirmation Toast -->
+    <div id="toast" class="hidden fixed bottom-8 right-8 bg-zinc-900 border border-yellow-400 rounded-3xl px-8 py-4 flex items-center gap-4 shadow-2xl">
+        <div id="toast-text" class="text-lg"></div>
+        <button onclick="hideToast()" class="text-yellow-400">×</button>
+    </div>
+
+    <script>
+        // =============== GAME DATA ===============
+        let player = {
+            money: 12450,
+            lastUpdate: Date.now(),
+            businesses: [],
+            assets: [],
+            liabilities: [],
+            partnerships: [],
+            totalNetWorth: 0
+        };
+
+        let marketplace = [];
+        let leaderboard = [
+            { name: "Alex Rivera", worth: 2450000, emoji: "🚀" },
+            { name: "Sara Chen", worth: 1890000, emoji: "🏭" },
+            { name: "Marcus Okoro", worth: 1675000, emoji: "📱" },
+            { name: "Priya Patel", worth: 1240000, emoji: "☕" }
+        ];
+
+        const businessTypes = [
+            { id: 1, name: "Lemonade Stand", icon: "🥤", baseCost: 650, baseIncome: 85, desc: "Classic starter" },
+            { id: 2, name: "Coffee Cart", icon: "☕", baseCost: 4800, baseIncome: 420, desc: "Daily caffeine rush" },
+            { id: 3, name: "Burger Joint", icon: "🍔", baseCost: 18500, baseIncome: 1850, desc: "Fast food king" },
+            { id: 4, name: "Tech Startup", icon: "💻", baseCost: 125000, baseIncome: 12400, desc: "High risk, high reward" },
+            { id: 5, name: "Luxury Hotel", icon: "🏨", baseCost: 750000, baseIncome: 78500, desc: "Elite status" }
+        ];
+
+        const assetTypes = [
+            { id: 1, name: "Small Apartment", icon: "🏠", cost: 28500, value: 28500, passive: 320 },
+            { id: 2, name: "Delivery Truck", icon: "🚚", cost: 18500, value: 18500, passive: 210 },
+            { id: 3, name: "Stock Portfolio", icon: "📈", cost: 45000, value: 45000, passive: 890 },
+            { id: 4, name: "Warehouse", icon: "🏭", cost: 92000, value: 92000, passive: 1250 }
+        ];
+
+        // =============== HELPER FUNCTIONS ===============
+        function formatMoney(amount) {
+            return '$' + Math.floor(amount).toLocaleString('en-US');
+        }
+
+        function saveGame() {
+            localStorage.setItem('empireforge_save', JSON.stringify(player));
+        }
+
+        function loadGame() {
+            const saved = localStorage.getItem('empireforge_save');
+            if (saved) {
+                player = JSON.parse(saved);
+            } else {
+                // Starter businesses
+                player.businesses = [
+                    { id: Date.now(), type: businessTypes[0], level: 2, incomePerHour: 210 }
+                ];
+                player.assets = [
+                    { id: Date.now()+1, type: assetTypes[0], value: 28500 }
+                ];
+            }
+            player.lastUpdate = Date.now();
+        }
+
+        function calculateOfflineIncome() {
+            const now = Date.now();
+            const hoursOffline = (now - player.lastUpdate) / (1000 * 60 * 60);
+            
+            if (hoursOffline > 0.01) {
+                let totalIncome = 0;
+                
+                player.businesses.forEach(b => {
+                    totalIncome += b.incomePerHour * hoursOffline;
+                });
+                
+                player.assets.forEach(a => {
+                    totalIncome += (a.type.passive || 0) * hoursOffline;
+                });
+                
+                player.money += Math.floor(totalIncome);
+                
+                document.getElementById('offline-income').innerHTML = 
+                    `+${formatMoney(totalIncome)} from offline <span class="text-emerald-400">(${hoursOffline.toFixed(1)} hrs)</span>`;
+            }
+            player.lastUpdate = now;
+        }
+
+        function updateUI() {
+            // Money
+            document.getElementById('money-display').textContent = formatMoney(player.money);
+            
+            // Net worth calculation
+            let net = player.money;
+            player.businesses.forEach(b => net += b.type.baseCost * b.level * 1.5);
+            player.assets.forEach(a => net += a.value);
+            player.liabilities.forEach(l => net -= l.amount);
+            player.totalNetWorth = Math.floor(net);
+            document.getElementById('net-worth').textContent = `Net Worth: ${formatMoney(player.totalNetWorth)}`;
+            document.getElementById('dash-networth').textContent = formatMoney(player.totalNetWorth);
+            
+            // Income rate
+            let totalHourly = 0;
+            player.businesses.forEach(b => totalHourly += b.incomePerHour);
+            player.assets.forEach(a => totalHourly += (a.type.passive || 0));
+            document.getElementById('income-rate').textContent = `+${formatMoney(totalHourly)} / hr`;
+            
+            // Dash stats
+            document.getElementById('dash-businesses').textContent = player.businesses.length;
+            document.getElementById('dash-assets').textContent = player.assets.length;
+            
+            renderBusinesses();
+            renderAssets();
+            renderLiabilities();
+            renderMarketplace();
+            renderPartnerships();
+            renderLeaderboard();
+            renderActivity();
+        }
+
+        function addActivity(text, color = 'text-emerald-400') {
+            const feed = document.getElementById('activity-feed');
+            const entry = document.createElement('div');
+            entry.className = `flex items-center gap-3 ${color}`;
+            entry.innerHTML = `
+                <span class="text-2xl">•</span>
+                <span>${text}</span>
+            `;
+            feed.prepend(entry);
+            
+            // Keep only 6
+            if (feed.children.length > 6) feed.removeChild(feed.lastChild);
+        }
+
+        // =============== INCOME TICK ===============
+        function startIncomeTick() {
+            setInterval(() => {
+                let added = 0;
+                
+                player.businesses.forEach(b => {
+                    added += b.incomePerHour / 3600;
+                });
+                
+                player.assets.forEach(a => {
+                    added += (a.type.passive || 0) / 3600;
+                });
+                
+                player.money += added;
+                updateUI();
+                saveGame();
+            }, 1000);
+        }
+
+        // =============== RENDER FUNCTIONS ===============
+        function renderBusinesses() {
+            const container = document.getElementById('businesses-grid');
+            container.innerHTML = '';
+            
+            player.businesses.forEach((biz, index) => {
+                const div = document.createElement('div');
+                div.className = 'bg-zinc-900 rounded-3xl p-6 card border border-zinc-700';
+                div.innerHTML = `
+                    <div class="flex justify-between">
+                        <div class="text-4xl">${biz.type.icon}</div>
+                        <div class="text-right">
+                            <div class="text-xs text-zinc-400">LVL ${biz.level}</div>
+                            <div class="font-bold text-3xl">${formatMoney(biz.incomePerHour)}</div>
+                            <div class="text-xs text-emerald-400">/ hour</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 font-semibold text-xl">${biz.type.name}</div>
+                    <div class="text-xs text-zinc-500 mt-1">${biz.type.desc}</div>
+                    
+                    <div class="mt-8 flex gap-3">
+                        <button onclick="upgradeBusiness(${index}); event.stopImmediatePropagation()" 
+                                class="flex-1 bg-yellow-400 text-black py-4 rounded-2xl text-sm font-bold">UPGRADE ($${formatMoney(biz.level * 8500)})</button>
+                        <button onclick="sellBusiness(${index}); event.stopImmediatePropagation()" 
+                                class="flex-1 bg-zinc-800 py-4 rounded-2xl text-sm">SELL</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            
+            if (player.businesses.length === 0) {
+                container.innerHTML = `<div class="col-span-3 text-center py-12 text-zinc-500">No businesses yet.<br>Open your first one!</div>`;
+            }
+        }
+
+        function renderAssets() {
+            const container = document.getElementById('assets-list');
+            container.innerHTML = '';
+            
+            player.assets.forEach((asset, i) => {
+                const div = document.createElement('div');
+                div.className = 'bg-zinc-900 rounded-3xl p-6 flex items-center gap-6 card';
+                div.innerHTML = `
+                    <div class="text-6xl w-16">${asset.type.icon}</div>
+                    <div class="flex-1">
+                        <div class="font-bold">${asset.type.name}</div>
+                        <div class="text-emerald-400 text-sm">+${formatMoney(asset.type.passive)} / hr</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-mono text-xl">${formatMoney(asset.value)}</div>
+                        <button onclick="sellAsset(${i}); event.stopImmediatePropagation()" 
+                                class="text-xs mt-2 px-5 py-1 bg-zinc-800 rounded-2xl">SELL</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderLiabilities() {
+            const container = document.getElementById('liabilities-list');
+            container.innerHTML = '';
+            
+            if (player.liabilities.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'bg-zinc-900/50 border border-dashed border-zinc-700 rounded-3xl p-8 text-center text-zinc-500';
+                empty.textContent = 'No loans yet. Take one to accelerate growth.';
+                container.appendChild(empty);
+                return;
+            }
+            
+            player.liabilities.forEach((loan, i) => {
+                const div = document.createElement('div');
+                div.className = 'bg-red-950/30 border border-red-900/50 rounded-3xl p-6';
+                div.innerHTML = `
+                    <div class="flex justify-between">
+                        <div>
+                            <div class="text-red-400 font-medium">Bank Loan</div>
+                            <div class="text-3xl font-bold text-red-400">${formatMoney(loan.amount)}</div>
+                        </div>
+                        <div class="text-right text-xs">
+                            <div class="text-zinc-400">8% / hr interest</div>
+                            <button onclick="payLoan(${i})" class="mt-4 bg-red-500 text-white text-xs px-6 py-2 rounded-2xl">PAY OFF</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderMarketplace() {
+            const container = document.getElementById('marketplace-grid');
+            container.innerHTML = '';
+            
+            // Fake AI listings
+            const fakeListings = [
+                { id: 101, seller: "Sara Chen", item: {name: "Coffee Cart", icon: "☕"}, price: 7200, type: "business" },
+                { id: 102, seller: "Marcus Okoro", item: {name: "Warehouse", icon: "🏭"}, price: 68000, type: "asset" },
+                { id: 103, seller: "Alex Rivera", item: {name: "Tech Startup", icon: "💻"}, price: 98000, type: "business" }
+            ];
+            
+            [...fakeListings, ...marketplace].forEach(listing => {
+                const div = document.createElement('div');
+                div.className = 'bg-zinc-900 rounded-3xl p-6 card border border-zinc-700';
+                div.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="text-5xl">${listing.item.icon}</div>
+                        <div class="flex-1">
+                            <div class="text-sm text-zinc-400">For sale by ${listing.seller}</div>
+                            <div class="font-semibold text-xl">${listing.item.name}</div>
+                            <div class="text-yellow-400 text-3xl mt-1">${formatMoney(listing.price)}</div>
+                        </div>
+                    </div>
+                    <button onclick="buyFromMarket(${listing.id})" 
+                            class="mt-6 w-full py-4 bg-yellow-400 hover:bg-amber-300 text-black font-bold rounded-2xl">BUY NOW</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderPartnerships() {
+            const container = document.getElementById('partnerships-grid');
+            container.innerHTML = `
+                <div class="bg-zinc-900 rounded-3xl p-8 text-center">
+                    <div class="text-6xl mb-6">🤝</div>
+                    <div class="font-bold text-xl">Joint Venture with Priya Patel</div>
+                    <div class="text-emerald-400">Luxury Hotel • You own 45%</div>
+                    <div class="text-xs mt-8 text-zinc-400">Your share this hour: +$31,200</div>
+                </div>
+                <div class="bg-zinc-900 rounded-3xl p-8 text-center">
+                    <div class="text-6xl mb-6">📦</div>
+                    <div class="font-bold text-xl">Warehouse Co-op</div>
+                    <div class="text-emerald-400">Marcus Okoro • 60% ownership</div>
+                    <div class="text-xs mt-8 text-zinc-400">Your share this hour: +$620</div>
+                </div>
+            `;
+        }
+
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboard-list');
+            container.innerHTML = '';
+            
+            leaderboard.forEach((entry, i) => {
+                const div = document.createElement('div');
+                div.className = 'bg-zinc-900 rounded-3xl p-6 flex items-center gap-6';
+                div.innerHTML = `
+                    <div class="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center text-3xl">${entry.emoji}</div>
+                    <div class="flex-1">
+                        <div class="font-medium">${entry.name}</div>
+                        <div class="text-xs text-zinc-400">Rank #${i+1}</div>
+                    </div>
+                    <div class="font-bold text-3xl text-yellow-400">${formatMoney(entry.worth)}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderActivity() {
+            // Already populated via addActivity calls
+        }
+
+        // =============== GAME ACTIONS ===============
+        function upgradeBusiness(index) {
+            const biz = player.businesses[index];
+            const upgradeCost = Math.floor(biz.level * 8500);
+            
+            if (player.money < upgradeCost) {
+                showToast("Not enough cash!", "text-red-400");
+                return;
+            }
+            
+            player.money -= upgradeCost;
+            biz.level++;
+            biz.incomePerHour = Math.floor(biz.type.baseIncome * biz.level * 1.15);
+            
+            showToast(`Upgraded ${biz.type.name} to level ${biz.level}!`, "text-emerald-400");
+            updateUI();
+            saveGame();
+        }
+
+        function sellBusiness(index) {
+            if (!confirm("Sell this entire business?")) return;
+            const biz = player.businesses[index];
+            const sellPrice = Math.floor(biz.type.baseCost * biz.level * 1.3);
+            
+            player.money += sellPrice;
+            player.businesses.splice(index, 1);
+            
+            showToast(`Sold ${biz.type.name} for ${formatMoney(sellPrice)}`, "text-emerald-400");
+            updateUI();
+            saveGame();
+        }
+
+        function sellAsset(index) {
+            if (!confirm("Sell this asset?")) return;
+            const asset = player.assets[index];
+            player.money += asset.value;
+            player.assets.splice(index, 1);
+            showToast(`Asset sold!`, "text-emerald-400");
+            updateUI();
+            saveGame();
+        }
+
+        function payLoan(index) {
+            const loan = player.liabilities[index];
+            if (player.money >= loan.amount) {
+                player.money -= loan.amount;
+                player.liabilities.splice(index, 1);
+                showToast("Loan paid off!", "text-emerald-400");
+                updateUI();
+                saveGame();
+            }
+        }
+
+        function buyFromMarket(marketId) {
+            // Simulate buying from marketplace
+            const price = Math.floor(Math.random() * 80000) + 12000;
+            
+            if (player.money < price) {
+                showToast("Not enough money!", "text-red-400");
+                return;
+            }
+            
+            player.money -= price;
+            
+            // Randomly give either business or asset
+            if (Math.random() > 0.5) {
+                const randomType = businessTypes[Math.floor(Math.random()*businessTypes.length)];
+                player.businesses.push({
+                    id: Date.now(),
+                    type: randomType,
+                    level: 1,
+                    incomePerHour: randomType.baseIncome
+                });
+                showToast(`Purchased ${randomType.name} from player!`, "text-emerald-400");
+            } else {
+                const randomAsset = assetTypes[Math.floor(Math.random()*assetTypes.length)];
+                player.assets.push({
+                    id: Date.now(),
+                    type: randomAsset,
+                    value: randomAsset.value
+                });
+                showToast(`Purchased ${randomAsset.name}!`, "text-emerald-400");
+            }
+            
+            updateUI();
+            saveGame();
+        }
+
+        // =============== MODALS ===============
+        function openNewBusinessModal() {
+            const container = document.getElementById('business-types');
+            container.innerHTML = '';
+            
+            businessTypes.forEach(type => {
+                const div = document.createElement('div');
+                div.className = 'bg-zinc-800 hover:bg-zinc-700 transition-colors rounded-3xl p-6 cursor-pointer text-center';
+                div.innerHTML = `
+                    <div class="text-6xl mb-4">${type.icon}</div>
+                    <div class="font-bold text-xl">${type.name}</div>
+                    <div class="text-emerald-400 text-2xl mt-1">${formatMoney(type.baseCost)}</div>
+                    <div class="text-xs text-zinc-400 mt-6">+${formatMoney(type.baseIncome)} / hr</div>
+                `;
+                div.onclick = () => {
+                    if (player.money >= type.baseCost) {
+                        player.money -= type.baseCost;
+                        player.businesses.push({
+                            id: Date.now(),
+                            type: type,
+                            level: 1,
+                            incomePerHour: type.baseIncome
+                        });
+                        closeModal('new-business-modal');
+                        showToast(`Opened ${type.name}!`, "text-emerald-400");
+                        updateUI();
+                        saveGame();
+                    } else {
+                        showToast("Not enough money!", "text-red-400");
+                    }
+                };
+                container.appendChild(div);
+            });
+            
+            document.getElementById('new-business-modal').classList.remove('hidden');
+            document.getElementById('new-business-modal').classList.add('flex');
+        }
+
+        function buyAssetModal() {
+            const container = document.getElementById('asset-types-list');
+            container.innerHTML = '';
+            
+            assetTypes.forEach(type => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between bg-zinc-800 hover:bg-zinc-700 p-6 rounded-3xl cursor-pointer';
+                div.innerHTML = `
+                    <div class="flex items-center gap-6">
+                        <div class="text-6xl">${type.icon}</div>
+                        <div>
+                            <div class="font-bold">${type.name}</div>
+                            <div class="text-emerald-400">+${formatMoney(type.passive)} / hr</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-bold">${formatMoney(type.cost)}</div>
+                    </div>
+                `;
+                div.onclick = () => {
+                    if (player.money >= type.cost) {
+                        player.money -= type.cost;
+                        player.assets.push({
+                            id: Date.now(),
+                            type: type,
+                            value: type.value
+                        });
+                        closeModal('buy-asset-modal');
+                        showToast(`Acquired ${type.name}!`, "text-emerald-400");
+                        updateUI();
+                        saveGame();
+                    }
+                };
+                container.appendChild(div);
+            });
+            
+            document.getElementById('buy-asset-modal').classList.remove('hidden');
+            document.getElementById('buy-asset-modal').classList.add('flex');
+        }
+
+        function showLoanModal() {
+            document.getElementById('loan-modal').classList.remove('hidden');
+            document.getElementById('loan-modal').classList.add('flex');
+            updateLoanPreview();
+        }
+
+        function updateLoanPreview() {
+            const amount = parseInt(document.getElementById('loan-amount').value);
+            document.getElementById('loan-preview').textContent = formatMoney(amount);
+            document.getElementById('loan-receive').textContent = formatMoney(amount);
+        }
+
+        function takeLoan() {
+            const amount = parseInt(document.getElementById('loan-amount').value);
+            player.money += amount;
+            player.liabilities.push({
+                amount: Math.floor(amount * 1.08),
+                timestamp: Date.now()
+            });
+            closeModal('loan-modal');
+            showToast(`Received ${formatMoney(amount)} loan!`, "text-emerald-400");
+            updateUI();
+            saveGame();
+        }
+
+        function listItemModal() {
+            const select = document.getElementById('list-item-select');
+            select.innerHTML = '<option value="">Select item to list...</option>';
+            
+            player.businesses.forEach((b, i) => {
+                const opt = document.createElement('option');
+                opt.value = `biz-${i}`;
+                opt.textContent = `${b.type.name} (Lvl ${b.level})`;
+                select.appendChild(opt);
+            });
+            
+            player.assets.forEach((a, i) => {
+                const opt = document.createElement('option');
+                opt.value = `asset-${i}`;
+                opt.textContent = `${a.type.name}`;
+                select.appendChild(opt);
+            });
+            
+            document.getElementById('list-item-modal').classList.remove('hidden');
+            document.getElementById('list-item-modal').classList.add('flex');
+        }
+
+        function listItemForSale() {
+            const selectVal = document.getElementById('list-item-select').value;
+            const price = parseInt(document.getElementById('listing-price').value);
+            
+            if (!selectVal) return;
+            
+            let itemToList;
+            
+            if (selectVal.startsWith('biz')) {
+                const idx = parseInt(selectVal.split('-')[1]);
+                itemToList = player.businesses[idx];
+                player.businesses.splice(idx, 1);
+            } else {
+                const idx = parseInt(selectVal.split('-')[1]);
+                itemToList = player.assets[idx];
+                player.assets.splice(idx, 1);
+            }
+            
+            marketplace.push({
+                id: Date.now(),
+                seller: "You",
+                item: itemToList,
+                price: price
+            });
+            
+            closeModal('list-item-modal');
+            showToast("Item listed on the global marketplace!", "text-emerald-400");
+            updateUI();
+            saveGame();
+        }
+
+        function createPartnershipModal() {
+            showToast("Partnership request sent to Priya Patel!", "text-purple-400");
+            // Would normally open a modal, but for demo we just toast
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function showToast(message, colorClass) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').innerHTML = `<span class="${colorClass}">${message}</span>`;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3200);
+        }
+
+        function hideToast() {
+            document.getElementById('toast').classList.add('hidden');
+        }
+
+        function refreshMarketplace() {
+            showToast("Marketplace refreshed • 3 new listings!", "text-yellow-400");
+            renderMarketplace();
+        }
+
+        function switchTab(tabIndex) {
+            // Hide all
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Show one
+            document.getElementById(`content-${tabIndex}`).classList.remove('hidden');
+            
+            // Tab styling
+            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('tab-active');
+            });
+            document.getElementById(`tab-${tabIndex}`).classList.add('tab-active');
+        }
+
+        function openMarketplace() {
+            switchTab(3);
+        }
+
+        function resetGame() {
+            if (confirm("Delete ALL progress and start fresh?")) {
+                localStorage.removeItem('empireforge_save');
+                location.reload();
+            }
+        }
+
+        // =============== SIMULATED OTHER PLAYERS ===============
+        function simulateOtherPlayers() {
+            setInterval(() => {
+                // Random AI buys your marketplace listing
+                if (marketplace.length > 0 && Math.random() < 0.3) {
+                    const idx = Math.floor(Math.random() * marketplace.length);
+                    if (marketplace[idx].seller === "You") {
+                        const salePrice = marketplace[idx].price;
+                        player.money += salePrice;
+                        marketplace.splice(idx, 1);
+                        showToast(`AI player bought your listing! +${formatMoney(salePrice)}`, "text-emerald-400");
+                        updateUI();
+                        saveGame();
+                    }
+                }
+                
+                // Occasionally add fake listing
+                if (Math.random() < 0.4) {
+                    renderMarketplace();
+                }
+                
+                // Random events
+                if (Math.random() < 0.15) {
+                    const bonus = Math.floor(Math.random() * 850) + 120;
+                    player.money += bonus;
+                    addActivity(`Lucky market day! +${formatMoney(bonus)}`, "text-emerald-400");
+                    updateUI();
+                }
+            }, 8500);
+        }
+
+        // =============== INITIALIZE ===============
+        function initGame() {
+            // Tailwind script already loaded
+            loadGame();
+            calculateOfflineIncome();
+            updateUI();
+            
+            // Start income
+            startIncomeTick();
+            
+            // Simulate players & events
+            simulateOtherPlayers();
+            
+            // Default to dashboard
+            switchTab(0);
+            
+            // Demo activity
+            setTimeout(() => {
+                addActivity("Coffee Cart earned $420 this hour");
+                addActivity("Apartment rent collected +$320", "text-emerald-400");
+            }, 1200);
+            
+            // Auto save every 15 seconds
+            setInterval(() => {
+                saveGame();
+            }, 15000);
+            
+            console.log('%c🎉 EmpireForge loaded successfully! Enjoy becoming rich.', 'color:#eab308; font-family:monospace');
+        }
+
+        // Boot the game
+        window.onload = initGame;
+    </script>
+</body>
